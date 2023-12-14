@@ -1,0 +1,114 @@
+﻿@page "/update-book/{id:int}"
+@using BlazorCrud.Models
+@using BlazorCrud.Repository
+@inject IRepository Repository
+@inject NavigationManager navigationManager
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-dark">Editar livro</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <EditForm Model="bookModel" OnValidSubmit="@(()=> OnEditBook())">
+            <DataAnnotationsValidator></DataAnnotationsValidator>
+            <div class="container">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label>Título: </label>
+                        </div>
+                        <div class="col-6">
+                            <InputText @bind-Value="bookModel.Title" class="form-control" placecholder="Título"></InputText>
+                            <ValidationMessage For="()=> bookModel.Title"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label>Descrição: </label>
+                        </div>
+                        <div class="col-6">
+                            <InputText @bind-Value="bookModel.Description" class="form-control" placecholder="Descrição"></InputText>
+                            <ValidationMessage For="()=> bookModel.Description"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label>Autor: </label>
+                        </div>
+                        <div class="col-6">
+                            <InputText @bind-Value="bookModel.Author" class="form-control" placecholder="Autor"></InputText>
+                            <ValidationMessage For="()=> bookModel.Author"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label>Páginas: </label>
+                        </div>
+                        <div class="col-6">
+                            <InputNumber @bind-Value="bookModel.Pages" class="form-control" placecholder="Número de páginas"></InputNumber>
+                            <ValidationMessage For="()=> bookModel.Pages"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label>Preço: </label>
+                        </div>
+                        <div class="col-6">
+                            <InputNumber @bind-Value="bookModel.Price" class="form-control" placecholder="Preço"></InputNumber>
+                            <ValidationMessage For="()=> bookModel.Price"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <button type="submit" class="btn btn-success">
+                                <span class="oi oi-cog" aria-hidden="true"> Atualizar Livro</span>
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-danger" @onclick="@(()=> navigationManager.NavigateTo("/books"))">
+                                <span class="oi oi-chevron-left" aria-hidden="true"> Voltar</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private Book bookModel = new Book();
+
+    [Parameter]
+    public int? Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        bookModel = await Repository.GetBookId(Id.Value);
+    }
+
+    private async Task OnEditBook()
+    {
+        var updatedBook = await Repository.UpdateBook(Id.Value, bookModel);
+        navigationManager.NavigateTo("/books");
+    }
+}

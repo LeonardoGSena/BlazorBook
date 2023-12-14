@@ -1,0 +1,63 @@
+﻿@page "/books"
+@using BlazorCrud.Models
+@using BlazorCrud.Repository
+@inject IRepository Repository
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-dark">Lista de Carros</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Título</th>
+                    <th>Descrição</th>
+                    <th>Autor</th>
+                    <th>Páginas</th>
+                    <th>Preço</th>
+                    <th>Criação</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var book in bookList)
+                {
+                    <tr>
+                        <td>@book.Id</td>
+                        <td>@book.Title</td>
+                        <td>@book.Description</td>
+                        <td>@book.Author</td>
+                        <td>@book.Pages</td>
+                        <td>@book.Price</td>
+                        <td>@book.CreateAt</td>
+                        <td>
+                            <a href="update-book/@book.Id" class="btn btn-success btn-sm"><span class="oi oi-plus" aria-hidden="true"></span> Editar</a>
+                            <button @onclick="@(() => DeleteBook(book.Id))" class="btn btn-danger btn-sm"><span class="oi oi-delete" aria-hidden="true"></span> Deletar</button>
+                        </td>
+                    </tr>                
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private List<Book> bookList = new List<Book>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        bookList = await Repository.GetBooks();
+    }
+
+    private async Task DeleteBook(int bookId)
+    {
+        await Repository.DeleteBook(bookId);
+        bookList = await Repository.GetBooks();
+    }
+}
